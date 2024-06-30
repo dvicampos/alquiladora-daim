@@ -1,0 +1,198 @@
+<div class="container text-center">
+
+<h2>Realizar Venta</h2>
+<a href="/ventas" class="btn btn-primary mb-4">Ver historial de ventas</a>
+<a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
+<form action="/ventas" method="post">
+    {{#if error}}
+        <p>{{error}}</p>
+    {{/if}}
+
+    <div class="mb-3">
+        <label for="nombre">Nombre del Cliente:</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="telefono">Número Telefónico:</label>
+        <input type="tel" name="telefono" id="telefono" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="domicilio">Domicilio de Entrega:</label>
+        <input type="text" name="domicilio" id="domicilio" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="fecha_entrega">Fecha de entrega:</label>
+        <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="fecha_fin">Fecha de salida: </label>
+        <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
+    </div>
+
+    <!-- Selección de productos -->
+    <h3>Seleccione los productos:</h3>
+    <div id="productos">
+    <div class="row row-cols-md-2 g-4">
+        {{!-- div inflables  --}}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Inflables</h5>
+                    <img class="rounded" src="/img/inflables.png" alt="" style="width: 100px;">
+                    {{#each inflables}}
+                    <div class="form-check">
+                        <input class="form-check-input producto" type="checkbox" data-tipo="Inflable" data-categoria="Inflable"
+                            data-precio="{{this.precioInflables}}" value="{{this.tipoInflables}}" id="inflable-{{@index}}">
+                        <label class="form-check-label" for="inflable-{{@index}}">
+                            {{this.tipoInflables}} - ${{this.precioInflables}}
+                        </label>
+                        <input type="number" class="form-control cantidad" data-tipo="Inflable"
+                            id="cantidad-inflable-{{@index}}" min="1" value="1" disabled>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{!-- div lonas  --}}
+        <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lonas</h5>
+                        <img class="rounded" src="/img/lona.png" alt="" style="width: 100px;">
+                        {{#each lonas}}
+                            <div class="form-check">
+                                <input class="form-check-input producto" type="checkbox" data-tipo="Lona" data-categoria="Lona" data-precio="{{this.precioLona}}" value="{{this.tipoLona}}" id="lona-{{@index}}">
+                                <label class="form-check-label" for="lona-{{@index}}">
+                                    {{this.tipoLona}} - ${{this.precioLona}}
+                                </label>
+                                <input type="number" class="form-control cantidad" data-tipo="Lona" id="cantidad-lona-{{@index}}" min="1" value="1" disabled>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+        </div>
+        {{!-- div manteleria  --}}
+        <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Manteleria</h5>
+                        <img class="rounded" src="/img/manteleria.png" alt="" style="width: 100px;">
+                        {{#each mantelerias}}
+                            <div class="form-check">
+                                <input class="form-check-input producto" type="checkbox" data-tipo="Manteleria" data-categoria="Manteleria" data-precio="{{this.precioManteleria}}" value="{{this.tipoManteleria}}" id="manteleria-{{@index}}">
+                                <label class="form-check-label" for="manteleria-{{@index}}">
+                                    {{this.tipoManteleria}} - ${{this.precioManteleria}}
+                                </label>
+                                <input type="number" class="form-control cantidad" data-tipo="Manteleria" id="cantidad-manteleria-{{@index}}" min="1" value="1" disabled>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+        </div>
+        {{!-- div sillas  --}}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Sillas</h5>
+                    <img class="rounded" src="/img/silla.png" alt="" style="width: 100px;">
+                    {{#each sillas}}
+                    <div class="form-check">
+                        <input class="form-check-input producto" type="checkbox" data-tipo="Silla" data-categoria="Silla" data-precio="{{this.precioSilla}}" value="{{this.tipoSilla}}" id="silla-{{@index}}">
+                        <label class="form-check-label" for="silla-{{@index}}">
+                            {{this.tipoSilla}} - ${{this.precioSilla}}
+                        </label>
+                        <input type="number" class="form-control cantidad" data-tipo="Silla" id="cantidad-silla-{{@index}}" min="1" value="1" disabled>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        {{!-- div mesas --}}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mesas</h5>
+                    <img class="rounded" src="/img/mesa.png" alt="" style="width: 100px;">
+                    {{#each mesas}}
+                    <div class="form-check">
+                        <input class="form-check-input producto" type="checkbox" data-tipo="Mesa" data-categoria="Mesa"
+                            data-precio="{{this.precioMesa}}" value="{{this.tipoMesa}}" id="mesa-{{@index}}">
+                        <label class="form-check-label" for="mesa-{{@index}}">
+                            {{this.tipoMesa}} - ${{this.precioMesa}}
+                        </label>
+                        <input type="number" class="form-control cantidad" data-tipo="Mesa" id="cantidad-mesa-{{@index}}"
+                            min="1" value="1" disabled>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {{!-- <h4>Inflables</h4>
+        {{#each inflables}}
+            <div class="form-check">
+                <input class="form-check-input producto" type="checkbox" data-tipo="Inflable" data-precio="{{this.precioInflables}}" value="{{this.tipoInflables}}" id="inflable-{{@index}}">
+                <label class="form-check-label" for="inflable-{{@index}}">
+                    {{this.tipoInflables}} - ${{this.precioInflables}}
+                </label>
+                <input type="number" class="form-control cantidad" data-tipo="Inflable" id="cantidad-inflable-{{@index}}" min="1" value="1" disabled>
+            </div>
+        {{/each}}
+
+        <h4>Lonas</h4>
+        {{#each lonas}}
+            <div class="form-check">
+                <input class="form-check-input producto" type="checkbox" data-tipo="Lona" data-precio="{{this.precioLona}}" value="{{this.tipoLona}}" id="lona-{{@index}}">
+                <label class="form-check-label" for="lona-{{@index}}">
+                    {{this.tipoLona}} - ${{this.precioLona}}
+                </label>
+                <input type="number" class="form-control cantidad" data-tipo="Lona" id="cantidad-lona-{{@index}}" min="1" value="1" disabled>
+            </div>
+        {{/each}}
+
+        <h4>Manteleria</h4>
+        {{#each mantelerias}}
+            <div class="form-check">
+                <input class="form-check-input producto" type="checkbox" data-tipo="Manteleria" data-precio="{{this.precioManteleria}}" value="{{this.tipoManteleria}}" id="manteleria-{{@index}}">
+                <label class="form-check-label" for="manteleria-{{@index}}">
+                    {{this.tipoManteleria}} - ${{this.precioManteleria}}
+                </label>
+                <input type="number" class="form-control cantidad" data-tipo="Manteleria" id="cantidad-manteleria-{{@index}}" min="1" value="1" disabled>
+            </div>
+        {{/each}}
+
+        <h4>Silla</h4>
+        {{#each sillas}}
+            <div class="form-check">
+                <input class="form-check-input producto" type="checkbox" data-tipo="Silla" data-precio="{{this.precioSilla}}" value="{{this.tipoSilla}}" id="silla-{{@index}}">
+                <label class="form-check-label" for="silla-{{@index}}">
+                    {{this.tipoSilla}} - ${{this.precioSilla}}
+                </label>
+                <input type="number" class="form-control cantidad" data-tipo="Silla" id="cantidad-silla-{{@index}}" min="1" value="1" disabled>
+            </div>
+        {{/each}}
+
+        <h4>Mesa</h4>
+        {{#each mesas}}
+            <div class="form-check">
+                <input class="form-check-input producto" type="checkbox" data-tipo="Mesa" data-precio="{{this.precioMesa}}" value="{{this.tipoMesa}}" id="mesa-{{@index}}">
+                <label class="form-check-label" for="mesa-{{@index}}">
+                    {{this.tipoMesa}} - ${{this.precioMesa}}
+                </label>
+                <input type="number" class="form-control cantidad" data-tipo="Mesa" id="cantidad-mesa-{{@index}}" min="1" value="1" disabled>
+            </div>
+        {{/each}} --}}
+
+
+    </div>
+
+    <h4>Total: $<span id="total">0</span></h4>
+
+    <input type="hidden" name="productos" id="productosInput">
+
+    <button type="submit" class="btn btn-primary">Realizar Venta</button>
+</form>
+
+</div>
+<script src="/js/totalCalculator.js"></script>

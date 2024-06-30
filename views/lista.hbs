@@ -1,0 +1,67 @@
+<div class="container">
+    <h2>Ventas Realizadas</h2>
+    <a href="/ventas/nueva" class="btn btn-primary mb-4">Realiza nueva venta</a>
+    <a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Domicilio</th>
+                <th>Fecha de Entrega</th>
+                <th>Fecha de salida</th>
+                <th>Total</th>
+                <th>Productos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each ventas}}
+                <tr>
+                    <td>{{this.nombre}}</td>
+                    <td>{{this.telefono}}</td>
+                    <td>{{this.domicilio}}</td>
+                    <td class="fecha-entrega">{{this.fecha_entrega}}</td>
+                    <td class="fecha-fin">{{this.fecha_fin}}</td>
+                    <td>${{this.total}}</td>
+                    <td>
+                        <ul>
+                            {{#each this.productos}}
+                                <li>{{this.tipo}} - {{this.cantidad}} x ${{this.precio}}</li>
+                            {{/each}}
+                        </ul>
+                    </td>
+                    <td>
+                        <a href="/ventas/pdf/{{this._id}}" class="btn btn-primary">Generar PDF</a>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // Selecciona todas las celdas con la clase 'fecha-entrega' y 'cambio-fecha'
+    const fechaEntregaElements = document.querySelectorAll('.fecha-entrega');
+    const fechaSalidaElements = document.querySelectorAll('.fecha-fin');
+
+    // Itera sobre los elementos y convierte las fechas a objetos Date
+    var options = {weekday: "long", year: "numeric", month: "long", day: "numeric"};
+    fechaEntregaElements.forEach(element => {
+        const fechaEntregaString = element.textContent.trim();
+        const fechaEntrega = new Date(fechaEntregaString).toLocaleString("es-ES",options);
+        console.log('Fecha de Entrega:', fechaEntrega);
+
+        // Formato de salida de la fecha (opcional)
+        element.textContent = fechaEntrega.toLocaleString();
+    });
+
+    fechaSalidaElements.forEach(element => {
+        const fechaSalidaString = element.textContent.trim();
+        const fechaSalida = new Date(fechaSalidaString).toLocaleString("es-ES",options);
+        console.log('Fecha de Salida:', fechaSalida);
+
+        // Formato de salida de la fecha (opcional)
+        element.textContent = fechaSalida.toLocaleString();
+    });
+});
+</script>

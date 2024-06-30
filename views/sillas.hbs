@@ -1,0 +1,105 @@
+<h2 class="text-center my-4">Silla</h2>
+<div class="container">
+    <a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
+  <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addSillaModal">Añadir Nueva Silla</button>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each sillas}}
+        <tr>
+          <td>{{this.tipoSilla}}</td>
+          <td>{{this.precioSilla}}</td>
+          <td>{{this.stockSilla}}</td>
+          <td>
+            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editSillaModal{{this._id}}">Editar</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSillaModal{{this._id}}">Eliminar</button>
+          </td>
+        </tr>
+
+        <!-- Modal Editar Lona -->
+        <div class="modal fade" id="editSillaModal{{this._id}}" tabindex="-1" aria-labelledby="editSillaModalLabel{{this._id}}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editSillaModalLabel{{this._id}}">Editar Silla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="/sillas/edit/{{this._id}}" method="POST">
+                  <div class="mb-3">
+                    <label for="tipoSilla" class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="tipoSilla" value="{{this.tipoSilla}}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="precioSilla" class="form-label">Precio</label>
+                    <input type="number" class="form-control" name="precioSilla" value="{{this.precioSilla}}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="stockSilla" class="form-label">Stock</label>
+                    <input type="number" class="form-control" name="stockSilla" value="{{this.stockSilla}}" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Eliminar Lona -->
+        <div class="modal fade" id="deleteSillaModal{{this._id}}" tabindex="-1" aria-labelledby="deleteSillaModalLabel{{this._id}}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteSillaModalLabel{{this._id}}">Eliminar Silla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta silla?</p>
+                <form action="/sillas/delete/{{this._id}}" method="GET">
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Añadir Lona -->
+<div class="modal fade" id="addSillaModal" tabindex="-1" aria-labelledby="addSillaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addSillaModalLabel">Añadir Nueva Silla</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/sillas/add" method="POST">
+          <div class="mb-3">
+            <label for="tipoSilla" class="form-label">Tipo</label>
+            <input type="text" class="form-control" name="tipoSilla" placeholder="Tipo" required>
+          </div>
+          <div class="mb-3">
+            <label for="precioSilla" class="form-label">Precio</label>
+            <input type="number" class="form-control" name="precioSilla" placeholder="Precio" required>
+          </div>
+          <div class="mb-3">
+            <label for="stockSilla" class="form-label">Stock</label>
+            <input type="number" class="form-control" name="stockSilla" placeholder="Stock" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Añadir</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

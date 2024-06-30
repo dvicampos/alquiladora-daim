@@ -1,0 +1,105 @@
+<h2 class="text-center my-4">Inflables</h2>
+<div class="container">
+  <a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
+  <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addInflableModal">Añadir Nuevo Inflable</button>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each inflables}}
+        <tr>
+          <td>{{this.tipoInflables}}</td>
+          <td>{{this.precioInflables}}</td>
+          <td>{{this.stockInflables}}</td>
+          <td>
+            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editInflableModal{{this._id}}">Editar</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteInflableModal{{this._id}}">Eliminar</button>
+          </td>
+        </tr>
+
+        <!-- Modal Editar Inflable -->
+        <div class="modal fade" id="editInflableModal{{this._id}}" tabindex="-1" aria-labelledby="editInflableModalLabel{{this._id}}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editInflableModalLabel{{this._id}}">Editar Inflable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form action="/inflables/edit/{{this._id}}" method="POST">
+                  <div class="mb-3">
+                    <label for="tipoInflables" class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="tipoInflables" value="{{this.tipoInflables}}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="precioInflables" class="form-label">Precio</label>
+                    <input type="number" class="form-control" name="precioInflables" value="{{this.precioInflables}}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="stockInflables" class="form-label">Stock</label>
+                    <input type="number" class="form-control" name="stockInflables" value="{{this.stockInflables}}" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Eliminar Inflable -->
+        <div class="modal fade" id="deleteInflableModal{{this._id}}" tabindex="-1" aria-labelledby="deleteInflableModalLabel{{this._id}}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteInflableModalLabel{{this._id}}">Eliminar Inflable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este inflable?</p>
+                <form action="/inflables/delete/{{this._id}}" method="GET">
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Añadir Inflable -->
+<div class="modal fade" id="addInflableModal" tabindex="-1" aria-labelledby="addInflableModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addInflableModalLabel">Añadir Nuevo Inflable</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/inflables/add" method="POST">
+          <div class="mb-3">
+            <label for="tipoInflables" class="form-label">Tipo</label>
+            <input type="text" class="form-control" name="tipoInflables" placeholder="Tipo" required>
+          </div>
+          <div class="mb-3">
+            <label for="precioInflables" class="form-label">Precio</label>
+            <input type="number" class="form-control" name="precioInflables" placeholder="Precio" required>
+          </div>
+          <div class="mb-3">
+            <label for="stockInflables" class="form-label">Stock</label>
+            <input type="number" class="form-control" name="stockInflables" placeholder="Stock" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Añadir</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
