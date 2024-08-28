@@ -19,7 +19,10 @@ const app = express();
 app.use('/api', stockRoutes);
 
 // Conectar a MongoDB Atlas
-const MONGO_URI = "mongodb+srv://davecamp:R8dy0LYFUlCh54lp@cluster0.fdwpzyb.mongodb.net/miapp?retryWrites=true&w=majority";
+// ARno0192
+//david
+const MONGO_URI = "mongodb+srv://david:ARno0192@cluster0.runro.mongodb.net/app?retryWrites=true&w=majority&appName=Cluster0"
+// const MONGO_URI = "mongodb+srv://davecamp:R8dy0LYFUlCh54lp@cluster0.fdwpzyb.mongodb.net/miapp?retryWrites=true&w=majority";
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
