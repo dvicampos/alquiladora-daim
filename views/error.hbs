@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Error 404</title>
+</head>
+<style>
+    body {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient( #00008B, #E73C7E);
+  background-repeat: no-repeat;
+  color: white;}
+
+.title {
+  text-align:center;
+  font-family: monospace;
+  font-size: 600%;
+  Margin-top: 0px;
+  text-decoration: underline;
+  
+}
+.subtitle{
+  text-align:center;
+  font-family: monospace;
+  font-size: 370%;
+  Margin-top: -10px;
+  Margin-bottom: 50px
+ 
+}
+.comment{
+  text-align:center;
+  font-family: monospace;
+  font-size: 200%;
+  margin-bottom: 60px;
+  margin-top: 30px;
+}
+  #ghost{
+  background:white;
+  width:160px;
+  height:250px;
+  margin: 0 auto;
+  border-radius: 80px 80px 0px 0px;
+    
+}
+#left-eye, #right-eye{
+  background:#282828;
+  border-radius: 10px;
+  height:30px;
+  width:20px;
+  top:50px;
+  left:40px;
+  position:relative;
+}
+
+  #right-eye{
+    top: 20px;
+    left: 95px;
+  }
+
+#wiggle{
+  background:white;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  position:relative;
+  top:-20px;
+  left:-60px;
+  margin:0 auto;
+}
+#wiggle2{
+  background:white;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  position:relative;
+  left:40px;
+  margin:0 auto;
+}
+#wiggle3{
+  background:white;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  position:relative;
+  left:80px;
+  top:-40px;
+  margin:0 auto;
+}
+#wiggle4{
+  background:white;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  position:relative;
+  left:120px;
+  top:-80px;
+  margin:0 auto;
+}
+.bounce{
+  -webkit-animation: bounce 1.5s infinite;
+}
+@-webkit-keyframes bounce {
+        0% {
+    transform: translate(0px, 0px);
+  }
+  
+  30%{
+    transform: translate(0px, 10px); 
+  }
+
+  75%{
+    transform:translate(0px, -25px); 
+  }
+  
+ 100% {
+    transform: translate(0px, 0px);
+  }
+}
+</style>
+<body>
+  <div class="title">404</div>
+  <div class="subtitle">Error</div>
+  <div class="bounce">
+
+ <div id="ghost" >
+    <div id="left-eye"></div>
+    <div id="right-eye"></div>
+    <div id="blush"></div>
+    <div id="blush2"></div>
+  </div>
+  <div id="wiggle">
+    <div id="wiggle2"></div>
+    <div id="wiggle3"></div>
+    <div id="wiggle4"></div>
+    </div></div>
+<div class=comment>Pagina no encontrada</div>
+</body>
+</html>

@@ -1,9 +1,64 @@
 <div class="container text-center">
 
+<header>
+  <div class="px-3 py-2 text-bg-dark border-bottom">
 <h2>Realizar Venta</h2>
-<a href="/ventas" class="btn btn-primary mb-4">Ver historial de ventas</a>
-<a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
-<form action="/ventas" method="post">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+          <img class="rounded" src="/img/logo.png" alt="" style="width: 100px;">
+            <p class="m-5 fs-3 text-info">¡Bienvenido {{user.name}}!</p>
+        </a>
+
+        <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+          <li>
+            <a href="/inflables" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/inflables.png" alt="" style="width: 100px;">
+              Inflables
+            </a>
+          </li>
+          <li>
+            <a href="/lonas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/lona.png" alt="" style="width: 100px;">
+              Lonas
+            </a>
+          </li>
+          <li>
+            <a href="/sillas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/silla.png" alt="" style="width: 100px;">
+              Silla
+            </a>
+          </li>
+          <li>
+            <a href="/mesas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/mesa.png" alt="" style="width: 100px;">
+              Mesa
+            </a>
+          </li>
+          <li>
+            <a href="/mantelerias" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/manteleria.png" alt="" style="width: 100px;">
+              Manteleria
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="px-3 py-2 border-bottom mb-3">
+    <div class="container d-flex flex-wrap justify-content-center">
+      <div class="text-end">
+        <a href="/dashboard" class="btn btn-info text-light">Inicio</a>
+                            <a href="/ventas/" class="btn btn-primary">Lista</a>
+                            <a href="/logout" class="btn btn-danger">
+                            Cerrar sesión
+                            </a>
+        {{!-- <button type="button" class="btn btn-light text-dark me-2">Cerrar sesion</button> --}}
+      </div>
+    </div>
+  </div>
+</header>
+<form action="/ventas" method="post" class="text-white">
     {{#if error}}
         <p>{{error}}</p>
     {{/if}}

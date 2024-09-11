@@ -1,7 +1,73 @@
 <div class="container">
-    <h2>Ventas Realizadas</h2>
-    <a href="/ventas/nueva" class="btn btn-primary mb-4">Realiza nueva venta</a>
-    <a href="/dashboard" class="btn btn-secondary mb-4">Dashboard</a>
+    <header>
+        <div class="px-3 py-2 text-bg-dark border-bottom">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="/"
+                        class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+                        <img class="rounded" src="/img/logo.png" alt="" style="width: 100px;">
+                        <p class="m-5 fs-3 text-info">¡Bienvenido {{user.name}}!</p>
+                    </a>
+
+                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                        <li>
+                            <a href="/inflables"
+                                class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+                                <img class="rounded" src="/img/inflables.png" alt="" style="width: 100px;">
+                                Inflables
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/lonas"
+                                class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+                                <img class="rounded" src="/img/lona.png" alt="" style="width: 100px;">
+                                Lonas
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/sillas"
+                                class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+                                <img class="rounded" src="/img/silla.png" alt="" style="width: 100px;">
+                                Silla
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/mesas"
+                                class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+                                <img class="rounded" src="/img/mesa.png" alt="" style="width: 100px;">
+                                Mesa
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/mantelerias"
+                                class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+                                <img class="rounded" src="/img/manteleria.png" alt="" style="width: 100px;">
+                                Manteleria
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <h2 class="text-white text-center">Ventas Realizadas</h2>
+            </div>
+        </div>
+        <div class="px-3 py-2 border-bottom mb-3">
+            <div class="container d-flex flex-wrap justify-content-center">
+                <div class="text-end">
+                    <div class="container d-flex flex-wrap justify-content-center">
+                        <div class="text-end">
+                            {{!-- <img class="rounded" src="/img/cerrar.png" alt="" style="width: 100px;"> --}}
+                            
+                            <a href="/dashboard" class="btn btn-info text-light">Inicio</a>
+                            <a href="/ventas/nueva" class="btn btn-primary">Realiza nueva venta</a>
+                            <a href="/logout" class="btn btn-danger">
+                            Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
     <table class="table">
         <thead class="thead-dark">
             <tr>
@@ -16,52 +82,52 @@
         </thead>
         <tbody>
             {{#each ventas}}
-                <tr>
-                    <td>{{this.nombre}}</td>
-                    <td>{{this.telefono}}</td>
-                    <td>{{this.domicilio}}</td>
-                    <td class="fecha-entrega">{{this.fecha_entrega}}</td>
-                    <td class="fecha-fin">{{this.fecha_fin}}</td>
-                    <td>${{this.total}}</td>
-                    <td>
-                        <ul>
-                            {{#each this.productos}}
-                                <li>{{this.tipo}} - {{this.cantidad}} x ${{this.precio}}</li>
-                            {{/each}}
-                        </ul>
-                    </td>
-                    <td>
-                        <a href="/ventas/pdf/{{this._id}}" class="btn btn-primary">Generar PDF</a>
-                    </td>
-                </tr>
+            <tr>
+                <td>{{this.nombre}}</td>
+                <td>{{this.telefono}}</td>
+                <td>{{this.domicilio}}</td>
+                <td class="fecha-entrega">{{this.fecha_entrega}}</td>
+                <td class="fecha-fin">{{this.fecha_fin}}</td>
+                <td>${{this.total}}</td>
+                <td>
+                    <ul>
+                        {{#each this.productos}}
+                        <li>{{this.tipo}} - {{this.cantidad}} x ${{this.precio}}</li>
+                        {{/each}}
+                    </ul>
+                </td>
+                <td>
+                    <a href="/ventas/pdf/{{this._id}}" class="btn btn-primary">Generar PDF</a>
+                </td>
+            </tr>
             {{/each}}
         </tbody>
     </table>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    // Selecciona todas las celdas con la clase 'fecha-entrega' y 'cambio-fecha'
-    const fechaEntregaElements = document.querySelectorAll('.fecha-entrega');
-    const fechaSalidaElements = document.querySelectorAll('.fecha-fin');
+        // Selecciona todas las celdas con la clase 'fecha-entrega' y 'cambio-fecha'
+        const fechaEntregaElements = document.querySelectorAll('.fecha-entrega');
+        const fechaSalidaElements = document.querySelectorAll('.fecha-fin');
 
-    // Itera sobre los elementos y convierte las fechas a objetos Date
-    var options = {weekday: "long", year: "numeric", month: "long", day: "numeric"};
-    fechaEntregaElements.forEach(element => {
-        const fechaEntregaString = element.textContent.trim();
-        const fechaEntrega = new Date(fechaEntregaString).toLocaleString("es-ES",options);
-        console.log('Fecha de Entrega:', fechaEntrega);
+        // Itera sobre los elementos y convierte las fechas a objetos Date
+        var options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+        fechaEntregaElements.forEach(element => {
+            const fechaEntregaString = element.textContent.trim();
+            const fechaEntrega = new Date(fechaEntregaString).toLocaleString("es-ES", options);
+            console.log('Fecha de Entrega:', fechaEntrega);
 
-        // Formato de salida de la fecha (opcional)
-        element.textContent = fechaEntrega.toLocaleString();
+            // Formato de salida de la fecha (opcional)
+            element.textContent = fechaEntrega.toLocaleString();
+        });
+
+        fechaSalidaElements.forEach(element => {
+            const fechaSalidaString = element.textContent.trim();
+            const fechaSalida = new Date(fechaSalidaString).toLocaleString("es-ES", options);
+            console.log('Fecha de Salida:', fechaSalida);
+
+            // Formato de salida de la fecha (opcional)
+            element.textContent = fechaSalida.toLocaleString();
+        });
     });
-
-    fechaSalidaElements.forEach(element => {
-        const fechaSalidaString = element.textContent.trim();
-        const fechaSalida = new Date(fechaSalidaString).toLocaleString("es-ES",options);
-        console.log('Fecha de Salida:', fechaSalida);
-
-        // Formato de salida de la fecha (opcional)
-        element.textContent = fechaSalida.toLocaleString();
-    });
-});
 </script>

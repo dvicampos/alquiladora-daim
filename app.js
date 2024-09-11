@@ -67,6 +67,10 @@ app.use('/', ventasRoutes);
 app.use('/ventas', ventasRoutes);
 
 
+app.use((req, res, next) => {
+  res.status(404).render(path.join(__dirname, 'views/error'));
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

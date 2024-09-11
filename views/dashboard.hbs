@@ -1,42 +1,67 @@
-<h2 class="text-center my-4">Dashboard</h2>
-<div class="container text-center">
-  <p>Bienvenido, {{user.name}}</p>
-<div class="btn-group-horizontal my-4 d-flex justify-content-between">
-    <a href="/inflables" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/inflables.png" alt="" style="width: 100px;">
-        Inflables
-    </a>
-    <a href="/lonas" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/lona.png" alt="" style="width: 100px;">
-        Lonas
-    </a>
-    <a href="/sillas" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/silla.png" alt="" style="width: 100px;">
-        Silla
-    </a>
-    <a href="/mesas" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/mesa.png" alt="" style="width: 100px;">
-        Mesa
-    </a>
-    <a href="/mantelerias" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/manteleria.png" alt="" style="width: 100px;">
-        Manteleria
-    </a>
-    <a href="/ventas" class="btn btn-primary d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/venta.png" alt="" style="width: 100px;">
-        Venta
-    </a>
-    <a href="/logout" class="btn btn-danger d-flex flex-column align-items-center">
-        <img class="rounded" src="/img/cerrar.png" alt="" style="width: 100px;">
-        Cerrar Sesión
-    </a>
-</div>
+<header>
+  <div class="px-3 py-2 text-bg-dark border-bottom">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+          <img class="rounded" src="/img/logo.png" alt="" style="width: 100px;">
+            <p class="m-5 fs-3 text-info">¡Bienvenido {{user.name}}!</p>
+        </a>
 
+        <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+          <li>
+            <a href="/inflables" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/inflables.png" alt="" style="width: 100px;">
+              Inflables
+            </a>
+          </li>
+          <li>
+            <a href="/lonas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/lona.png" alt="" style="width: 100px;">
+              Lonas
+            </a>
+          </li>
+          <li>
+            <a href="/sillas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/silla.png" alt="" style="width: 100px;">
+              Silla
+            </a>
+          </li>
+          <li>
+            <a href="/mesas" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/mesa.png" alt="" style="width: 100px;">
+              Mesa
+            </a>
+          </li>
+          <li>
+            <a href="/mantelerias" class="nav-link btn btn-info d-flex flex-column align-items-center text-white-50">
+              <img class="rounded" src="/img/manteleria.png" alt="" style="width: 100px;">
+              Manteleria
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="px-3 py-2 border-bottom mb-3">
+    <div class="container d-flex flex-wrap justify-content-center">
+      <div class="text-end">
+        <a href="/ventas/nueva" class="btn btn-primary">Realiza nueva venta</a>
+        <a href="/ventas/" class="btn btn-info text-white">Lista</a>
+        <a href="/logout" class="btn btn-danger">
+        {{!-- <img class="rounded" src="/img/cerrar.png" alt="" style="width: 100px;"> --}}
+        Cerrar sesión
+        </a>
+        {{!-- <button type="button" class="btn btn-light text-dark me-2">Cerrar sesion</button> --}}
+      </div>
+    </div>
+  </div>
+</header>
+<div class="container text-center text-white">
 
   <div class="d-flex justify-content-center">
     <div style="width: 50%; margin-right: 10px;">
       <h3 class="my-4">Stock de Inflables</h3>
-      <canvas id="inflableStockChart" width="400" height="200"></canvas>
+      <canvas id="manteleriaStockChart" width="400" height="200"></canvas>
     </div>
 
     <div style="width: 50%;">
@@ -60,22 +85,22 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/stock-data')
       .then(response => response.json())
       .then(data => {
-        // Gráfica de Inflables
-        const inflableCtx = document.getElementById('inflableStockChart').getContext('2d');
-        const inflableLabels = data.inflableStock.map(item => item.tipo);
-        const inflableData = data.inflableStock.map(item => item.stock);
+        // Gráfica de manteleria
+        const manteleriaCtx = document.getElementById('manteleriaStockChart').getContext('2d');
+        const manteleriaLabels = data.manteleriaStock.map(item => item.tipo);
+        const manteleriaData = data.manteleriaStock.map(item => item.stock);
 
-        const inflableStockChart = new Chart(inflableCtx, {
+        const manteleriaStockChart = new Chart(manteleriaCtx, {
           type: 'line',
           data: {
-            labels: inflableLabels,
+            labels: manteleriaLabels,
             datasets: [{
-              label: 'Stock de Inflables',
-              data: inflableData,
+              label: 'Stock de manteleria',
+              data: manteleriaData,
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
               borderWidth: 1,

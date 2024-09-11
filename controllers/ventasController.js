@@ -8,53 +8,276 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
+const pdf = require('html-pdf');
+
+function generatePDFfromHTML(htmlContent, callback) {
+  pdf.create(htmlContent).toBuffer((err, buffer) => {
+    if (err) return callback(err);
+    callback(null, buffer);
+  });
+}
 
 exports.generarPDF = async (req, res) => {
-    // cuidar que se haya iniciado sesion para entra a vista
     if (!req.session.user) {
-        return res.redirect('/login');
+      return res.redirect('/login');
     }
     try {
-        const ventaId = req.params.id;
-        const venta = await Venta.findById(ventaId);
+      const ventaId = req.params.id;
+      const venta = await Venta.findById(ventaId);
+  
+      if (!venta) {
+        return res.status(404).send('Venta no encontrada');
+      }
+      
+    const fecha = new Date(venta.fecha_entrega);
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1;
+    const anio = fecha.getFullYear();
 
-        if (!venta) {
-            return res.status(404).send('Venta no encontrada');
+    const fechaFormateada = `${dia}/${mes}/${anio}`; 
+      let productosHtml = venta.productos.map(producto => `
+        <tr>
+          <td>${fechaFormateada}</td>
+          <td>${producto.categoria}</td>
+          <td>${producto.tipo}</td>
+          <td>${producto.cantidad}</td>
+          <td>$${producto.precio.toFixed(2)}</td>
+          <td>$${(producto.precio * producto.cantidad).toFixed(2)}</td>
+        </tr>
+      `).join('');
+  
+      const subtotal = venta.productos.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0);
+      
+      const htmlContent = `
+        <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #e0f2f7;
+          }
+  
+          .container {
+              width: 95%;
+              margin: 0 auto;
+              padding: 20px;
+              background-color: #fff;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              border-radius: 5px;
+          }
+  
+          h1, h2, h3, h4, h5, h6 {
+              color: #333;
+              margin-bottom: 10px;
+          }
+  
+          table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+          }
+  
+          th, td {
+              padding: 10px;
+              border: 1px solid #ddd;
+              text-align: left;
+          }
+  
+          th {
+              background-color: #f2f2f2;
+              font-weight: bold;
+          }
+  
+          .total {
+              background-color: #f5f5f5;
+              font-weight: bold;
+          }
+  
+          .nota {
+              background-color: #f5f5f5;
+              font-weight: bold;
+              text-align: center;
+          }
+          
+          table {
+              width: 100%;
+              border-collapse: collapse;
+          }
+          th {
+              background-color: #1E90FF;
+              color: white;
+              padding: 10px;
+          }
+          td {
+              border: 1px solid #ddd;
+              padding: 8px;
+          }
+      </style>
+  
+  </head>
+  <body>
+      <div class="container">
+          <h1>ALQUILADORA DAIM</h1>
+  
+          <div class="info">
+          <table>
+              <tr>
+                  <th colspan="6">ALQUILADORA DAIM</th>
+              </tr>
+  
+              <tr>
+                  <td>Dirección postal</td>
+                  <td>CALLE REFORMA #15</td>
+                  <td>Número de teléfono</td>
+                  <td>246 170 2872</td>
+                  <td>Correo electrónico</td>
+                  <td>ixtlapalejic@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>Ciudad, estado, código</td>
+                  <td colspan="5">Tlaxcala, Tlax. 90180 Sn Cosme Atlamaxad Fax: Número de fax</td>
+              </tr>
+              <tr>
+                  <td>Sitio web</td>
+                  <td colspan="5"><a href="https://alquiladora-daim.onrender.com/login" target="_blank">https://alquiladora-daim.onrender.com/</a></td>
+              </tr>
+              <tr>
+                  <td>NOTA para</td>
+                  <td>${venta.nombre}</td>
+                  <td>Teléfono</td>
+                  <td>${venta.telefono}</td>
+                  <td>N.º de nota</td>
+                  <td>${venta.id}</td>
+              </tr>
+              <tr>
+                  <td>Dirección</td>
+                  <td colspan="5">${venta.domicilio}</td>
+              </tr>
+              <tr>
+                  <td>Fecha de la nota</td>
+                  <td colspan="5">${fechaFormateada}</td>
+              </tr>
+          </table>
+              
+          </div>
+          
+          <table>
+              <thead>
+                  <tr>
+                      <th>Fecha de Entrega</th>
+                      <th>Categoria</th>
+                      <th>Tipo</th>
+                      <th>Cant.</th>
+                      <th>Precio por unidad</th>
+                      <th>Precio</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  ${productosHtml}
+              </tbody>
+              <tfoot>
+                  <tr>
+                      <td colspan="5" class="nota">Subtotal de la NOTA</td>
+                      <td class="nota">$${subtotal.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                      <td colspan="5" class="nota">Tipo impositivo</td>
+                      <td class="nota"></td>
+                  </tr>
+                  <tr>
+                      <td colspan="5" class="nota">Impuesto sobre las ventas</td>
+                      <td class="nota">$0.00</td>
+                  </tr>
+                  <tr>
+                      <td colspan="5" class="nota">Otros</td>
+                      <td class="nota"></td>
+                  </tr>
+                  <tr>
+                      <td colspan="5" class="nota">Depósito recibido</td>
+                      <td class="nota"></td>
+                  </tr>
+                  <tr>
+                      <td colspan="5" class="total">TOTAL</td>
+                      <td class="total">$${subtotal.toFixed(2)}</td>
+                  </tr>
+              </tfoot>
+          </table>
+  
+          <p>Derechos reservados ALQUILADORA DAIM.</p>
+          <p>Total a pagar $${subtotal.toFixed(2)}</p>
+      </div>
+  </body>
+  </html>
+      `;
+  
+      generatePDFfromHTML(htmlContent, (err, buffer) => {
+        if (err) {
+          return res.status(500).send(`Error al generar el PDF: ${err.message}`);
         }
-
-        const doc = new PDFDocument();
-        let buffers = [];
-        doc.on('data', buffers.push.bind(buffers));
-        doc.on('end', () => {
-            let pdfData = Buffer.concat(buffers);
-            res.writeHead(200, {
-                'Content-Length': Buffer.byteLength(pdfData),
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment;filename=venta_${venta.nombre}.pdf`,
-            }).end(pdfData);
-        });
-
-        doc.fontSize(25).text('Detalles de la Venta', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(18).text(`Cliente: ${venta.nombre}`);
-        doc.text(`Teléfono: ${venta.telefono}`);
-        doc.text(`Domicilio: ${venta.domicilio}`);
-        doc.text(`Fecha de Entrega: ${venta.fecha_entrega.toDateString()}`);
-        doc.text(`Fecha de Salida: ${venta.fecha_fin.toDateString()}`);
-        doc.text(`Total: $${venta.total}`);
-        doc.moveDown();
-        doc.fontSize(20).text('Productos', { align: 'left' });
-
-        venta.productos.forEach(producto => {
-            // doc.fontSize(15).text(`${producto.tipo} (${producto.categoria}) - ${producto.cantidad} x $${producto.precio}`);
-            doc.fontSize(15).text(` Descripcion: ${producto.categoria} , ${producto.tipo} | Cantidad: (${producto.cantidad}) | Precio por unidad: ${producto.precio} | Total de categoria: $${producto.precio * producto.cantidad}`);
-        });
-
-        doc.end();
+  
+        res.setHeader('Content-Disposition', `attachment;filename=venta_${venta.nombre}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(buffer);
+      });
     } catch (error) {
-        res.status(500).send(`Error al generar el PDF: ${error.message}`);
+      res.status(500).send(`Error al generar el PDF: ${error.message}`);
     }
-};
+  };
+  
+
+
+// exports.generarPDF = async (req, res) => {
+//     // cuidar que se haya iniciado sesion para entra a vista
+//     if (!req.session.user) {
+//         return res.redirect('/login');
+//     }
+//     try {
+//         const ventaId = req.params.id;
+//         const venta = await Venta.findById(ventaId);
+
+//         if (!venta) {
+//             return res.status(404).send('Venta no encontrada');
+//         }
+
+//         const doc = new PDFDocument();
+//         let buffers = [];
+//         doc.on('data', buffers.push.bind(buffers));
+//         doc.on('end', () => {
+//             let pdfData = Buffer.concat(buffers);
+//             res.writeHead(200, {
+//                 'Content-Length': Buffer.byteLength(pdfData),
+//                 'Content-Type': 'application/pdf',
+//                 'Content-Disposition': `attachment;filename=venta_${venta.nombre}.pdf`,
+//             }).end(pdfData);
+//         });
+
+//         doc.fontSize(25).text('Detalles de la Venta', { align: 'center' });
+//         doc.moveDown();
+//         doc.fontSize(18).text(`Cliente: ${venta.nombre}`);
+//         doc.text(`Teléfono: ${venta.telefono}`);
+//         doc.text(`Domicilio: ${venta.domicilio}`);
+//         doc.text(`Fecha de Entrega: ${venta.fecha_entrega.toDateString()}`);
+//         doc.text(`Fecha de Salida: ${venta.fecha_fin.toDateString()}`);
+//         doc.text(`Total: $${venta.total}`);
+//         doc.moveDown();
+//         doc.fontSize(20).text('Productos', { align: 'left' });
+
+//         venta.productos.forEach(producto => {
+//             // doc.fontSize(15).text(`${producto.tipo} (${producto.categoria}) - ${producto.cantidad} x $${producto.precio}`);
+//             doc.fontSize(15).text(` Descripcion: ${producto.categoria} , ${producto.tipo} | Cantidad: (${producto.cantidad}) | Precio por unidad: ${producto.precio} | Total de categoria: $${producto.precio * producto.cantidad}`);
+//         });
+
+//         doc.end();
+//     } catch (error) {
+//         res.status(500).send(`Error al generar el PDF: ${error.message}`);
+//     }
+// };
 exports.mostrarFormulario = async (req, res) => {
     // cuidar que se haya iniciado sesion para entra a vista
     if (!req.session.user) {
