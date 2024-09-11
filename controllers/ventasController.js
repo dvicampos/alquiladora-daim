@@ -230,6 +230,7 @@ function generatePDFfromHTML(htmlContent, callback) {
 //     }
 //   };
   
+const puppeteer = require('puppeteer');
 
 exports.generarPDF = async (req, res) => {
     if (!req.session.user) {
@@ -266,14 +267,60 @@ exports.generarPDF = async (req, res) => {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Venta ${venta.nombre}</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #e0f2f7; }
-                .container { width: 95%; margin: 0 auto; padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-                th { background-color: #1E90FF; color: white; }
-                .total { background-color: #f5f5f5; font-weight: bold; }
-                .nota { background-color: #f5f5f5; font-weight: bold; text-align: center; }
-                a { color: #1E90FF; text-decoration: none; }
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #e0f2f7;
+                }
+  
+                .container {
+                    width: 95%;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #fff;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    border-radius: 5px;
+                }
+  
+                h1, h2, h3, h4, h5, h6 {
+                    color: #333;
+                    margin-bottom: 10px;
+                }
+  
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+  
+                th, td {
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    text-align: left;
+                }
+  
+                th {
+                    background-color: #1E90FF;
+                    color: white;
+                    padding: 10px;
+                }
+  
+                td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+  
+                .total {
+                    background-color: #f5f5f5;
+                    font-weight: bold;
+                }
+  
+                .nota {
+                    background-color: #f5f5f5;
+                    font-weight: bold;
+                    text-align: center;
+                }
             </style>
         </head>
         <body>
@@ -301,7 +348,7 @@ exports.generarPDF = async (req, res) => {
                             <td colspan="5"><a href="https://alquiladora-daim.onrender.com/login">https://alquiladora-daim.onrender.com/</a></td>
                         </tr>
                         <tr>
-                            <td>NOTA para</td>
+                            <td>Nota para</td>
                             <td>${venta.nombre}</td>
                             <td>Teléfono</td>
                             <td>${venta.telefono}</td>
@@ -366,21 +413,24 @@ exports.generarPDF = async (req, res) => {
         </html>
         `;
 
-        // Generate PDF from HTML
-        pdf.create(html).toBuffer((err, buffer) => {
-            if (err) {
-                return res.status(500).send(`Error al generar el PDF: ${err.message}`);
-            }
-            res.writeHead(200, {
-                'Content-Length': buffer.length,
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment; filename=venta_${venta.nombre}.pdf`,
-            }).end(buffer);
-        });
+        // Generate PDF from HTML using Puppeteer
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(html);
+        const buffer = await page.pdf({ format: 'A4' });
+        await browser.close();
+
+        res.writeHead(200, {
+            'Content-Length': buffer.length,
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename=venta_${venta.nombre}.pdf`,
+        }).end(buffer);
     } catch (error) {
         res.status(500).send(`Error al generar el PDF: ${error.message}`);
     }
 };
+
+
 
 
 exports.mostrarFormulario = async (req, res) => {
