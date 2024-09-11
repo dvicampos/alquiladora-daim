@@ -6,7 +6,7 @@ body {
   padding: 0;
 }
 .login-background {
-  background-image: url('../img/fondoLogin.jpg');
+  background-image: url('../img/fondo1.jpg');
   background-size: cover; /* Ajusta la imagen para que cubra el contenedor */
   background-position: center; /* Centra la imagen */
   background-repeat: no-repeat; /* Evita que la imagen se repita */
