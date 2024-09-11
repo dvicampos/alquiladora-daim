@@ -230,7 +230,7 @@ function generatePDFfromHTML(htmlContent, callback) {
 //     }
 //   };
   
-const puppeteer = require('puppeteer');
+
 
 exports.generarPDF = async (req, res) => {
     if (!req.session.user) {
@@ -245,193 +245,118 @@ exports.generarPDF = async (req, res) => {
             return res.status(404).send('Venta no encontrada');
         }
 
-        // Genera HTML
-        const fechaFormateada = venta.fecha_entrega.toDateString();
-        const productosHtml = venta.productos.map(producto => `
-            <tr>
-                <td>${venta.fecha_entrega.toDateString()}</td>
-                <td>${producto.categoria}</td>
-                <td>${producto.tipo}</td>
-                <td>${producto.cantidad}</td>
-                <td>${producto.precio.toFixed(2)}</td>
-                <td>${(producto.precio * producto.cantidad).toFixed(2)}</td>
-            </tr>
-        `).join('');
-        const subtotal = venta.productos.reduce((acc, producto) => acc + (producto.precio * producto.cantidad), 0);
+        let subtotal = 0;
+        const doc = new PDFDocument({ margin: 50 });
+        let buffers = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => {
+            const pdfData = Buffer.concat(buffers);
+            res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(pdfData),
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename=venta_${venta.nombre}.pdf`,
+            }).end(pdfData);
+        });
 
-        const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Venta ${venta.nombre}</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #e0f2f7;
-                }
-  
-                .container {
-                    width: 95%;
-                    margin: 0 auto;
-                    padding: 20px;
-                    background-color: #fff;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    border-radius: 5px;
-                }
-  
-                h1, h2, h3, h4, h5, h6 {
-                    color: #333;
-                    margin-bottom: 10px;
-                }
-  
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }
-  
-                th, td {
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                    text-align: left;
-                }
-  
-                th {
-                    background-color: #1E90FF;
-                    color: white;
-                    padding: 10px;
-                }
-  
-                td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                }
-  
-                .total {
-                    background-color: #f5f5f5;
-                    font-weight: bold;
-                }
-  
-                .nota {
-                    background-color: #f5f5f5;
-                    font-weight: bold;
-                    text-align: center;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>ALQUILADORA DAIM</h1>
-                <div class="info">
-                    <table>
-                        <tr>
-                            <th colspan="6">ALQUILADORA DAIM</th>
-                        </tr>
-                        <tr>
-                            <td>Dirección postal</td>
-                            <td>CALLE REFORMA #15</td>
-                            <td>Número de teléfono</td>
-                            <td>246 170 2872</td>
-                            <td>Correo electrónico</td>
-                            <td>ixtlapalejic@gmail.com</td>
-                        </tr>
-                        <tr>
-                            <td>Ciudad, estado, código</td>
-                            <td colspan="5">Tlaxcala, Tlax. 90180 Sn Cosme Atlamaxad Fax: Número de fax</td>
-                        </tr>
-                        <tr>
-                            <td>Sitio web</td>
-                            <td colspan="5"><a href="https://alquiladora-daim.onrender.com/login">https://alquiladora-daim.onrender.com/</a></td>
-                        </tr>
-                        <tr>
-                            <td>Nota para</td>
-                            <td>${venta.nombre}</td>
-                            <td>Teléfono</td>
-                            <td>${venta.telefono}</td>
-                            <td>N.º de nota</td>
-                            <td>${ventaId}</td>
-                        </tr>
-                        <tr>
-                            <td>Dirección</td>
-                            <td colspan="5">${venta.domicilio}</td>
-                        </tr>
-                        <tr>
-                            <td>Fecha de la nota</td>
-                            <td colspan="5">${fechaFormateada}</td>
-                        </tr>
-                    </table>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha de Entrega</th>
-                            <th>Categoria</th>
-                            <th>Tipo</th>
-                            <th>Cant.</th>
-                            <th>Precio por unidad</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${productosHtml}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="5" class="nota">Subtotal de la NOTA</td>
-                            <td class="nota">$${subtotal.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="nota">Tipo impositivo</td>
-                            <td class="nota"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="nota">Impuesto sobre las ventas</td>
-                            <td class="nota">$0.00</td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="nota">Otros</td>
-                            <td class="nota"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="nota">Depósito recibido</td>
-                            <td class="nota"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="total">TOTAL</td>
-                            <td class="total">$${subtotal.toFixed(2)}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <p>Derechos reservados ALQUILADORA DAIM.</p>
-                <p>Total a pagar $${subtotal.toFixed(2)}</p>
-            </div>
-        </body>
-        </html>
-        `;
+        // Header
+        doc.fontSize(18).text('ALQUILADORA DAIM', { align: 'center' });
+        doc.moveDown();
 
-        // Generate PDF from HTML using Puppeteer
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.setContent(html);
-        const buffer = await page.pdf({ format: 'A4' });
-        await browser.close();
+        // Company Info
+        doc.fontSize(12)
+           .text('Dirección postal: CALLE REFORMA #15', { continued: true })
+           .text('Número de teléfono: 246 170 2872', { continued: true })
+           .text('Correo electrónico: ixtlapalejic@gmail.com', { continued: true })
+           .text('Ciudad, estado, código: Tlaxcala, Tlax. 90180 Sn Cosme Atlamaxad Fax: Número de fax', { continued: true })
+           .text('Sitio web: https://alquiladora-daim.onrender.com/', { continued: true })
+           .moveDown();
 
-        res.writeHead(200, {
-            'Content-Length': buffer.length,
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename=venta_${venta.nombre}.pdf`,
-        }).end(buffer);
+        // Note Information
+        doc.text(`NOTA para: ${venta.nombre}`, { continued: true })
+           .text(`Teléfono: ${venta.telefono}`, { continued: true })
+           .text(`N.º de nota: ${ventaId}`, { continued: true })
+           .text(`Dirección: ${venta.domicilio}`, { continued: true })
+           .text(`Fecha de la nota: ${venta.fecha_entrega.toDateString()}`, { continued: true })
+           .moveDown();
+
+        // Draw table for Company Info
+        const tableTop = doc.y;
+        doc.fontSize(12)
+           .text('Dirección postal', 50, tableTop, { width: 90, align: 'left' })
+           .text('CALLE REFORMA #15', 140, tableTop, { width: 90, align: 'left' })
+           .text('Número de teléfono', 230, tableTop, { width: 90, align: 'left' })
+           .text('246 170 2872', 320, tableTop, { width: 90, align: 'left' })
+           .text('Correo electrónico', 410, tableTop, { width: 90, align: 'left' })
+           .text('ixtlapalejic@gmail.com', 500, tableTop, { width: 90, align: 'left' })
+           .moveDown();
+
+        // Draw table lines
+        doc.strokeColor('#ddd')
+           .lineWidth(1)
+           .moveTo(50, tableTop + 20)
+           .lineTo(570, tableTop + 20)
+           .stroke();
+
+        // Table Rows
+        const rowHeight = 20;
+        venta.productos.forEach(producto => {
+            const precioTotal = producto.precio * producto.cantidad;
+            subtotal += precioTotal;
+
+            doc.fontSize(10)
+               .text(`${venta.fecha_entrega.toDateString()}`, 50, doc.y, { width: 90, align: 'left' })
+               .text(`${producto.categoria}`, 140, doc.y, { width: 90, align: 'left' })
+               .text(`${producto.tipo}`, 230, doc.y, { width: 90, align: 'left' })
+               .text(`${producto.cantidad}`, 320, doc.y, { width: 50, align: 'right' })
+               .text(`$${producto.precio.toFixed(2)}`, 370, doc.y, { width: 100, align: 'right' })
+               .text(`$${precioTotal.toFixed(2)}`, 470, doc.y, { width: 100, align: 'right' })
+               .moveDown();
+
+            // Draw row line
+            doc.strokeColor('#ddd')
+               .lineWidth(0.5)
+               .moveTo(50, doc.y - 5)
+               .lineTo(570, doc.y - 5)
+               .stroke();
+        });
+
+        // Draw bottom border
+        doc.strokeColor('#ddd')
+           .lineWidth(1)
+           .moveTo(50, doc.y)
+           .lineTo(570, doc.y)
+           .stroke();
+        
+        doc.moveDown();
+
+        // Summary Table
+        doc.fontSize(12)
+           .text('Subtotal de la NOTA:', { continued: true })
+           .text(`$${subtotal.toFixed(2)}`, { continued: true })
+           .moveDown()
+           .text('Tipo impositivo:', { continued: true })
+           .text('', { continued: true })
+           .text('Impuesto sobre las ventas:', { continued: true })
+           .text('$0.00', { continued: true })
+           .text('Otros:', { continued: true })
+           .text('', { continued: true })
+           .text('Depósito recibido:', { continued: true })
+           .text('', { continued: true })
+           .moveDown()
+           .fontSize(14)
+           .text(`TOTAL: $${subtotal.toFixed(2)}`, { continued: true })
+           .moveDown();
+
+        // Footer
+        doc.fontSize(12)
+           .text('Derechos reservados ALQUILADORA DAIM.')
+           .text(`Total a pagar: $${subtotal.toFixed(2)}`);
+
+        doc.end();
     } catch (error) {
         res.status(500).send(`Error al generar el PDF: ${error.message}`);
     }
 };
-
-
-
 
 exports.mostrarFormulario = async (req, res) => {
     // cuidar que se haya iniciado sesion para entra a vista
