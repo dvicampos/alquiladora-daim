@@ -4,7 +4,9 @@
   "description": "Alquiladora DAIM",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "author": "DAVANITECH",
   "license": "ISC",
@@ -22,7 +24,9 @@
     "html-pdf": "^3.0.1",
     "jspdf": "^2.5.1",
     "mongoose": "^8.5.4",
+    "nodemon": "^3.1.4",
     "pdfkit": "^0.15.0",
+    "pdfkit-table": "^0.1.99",
     "puppeteer": "^22.15.0"
   }
 }

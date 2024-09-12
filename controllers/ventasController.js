@@ -229,8 +229,6 @@ function generatePDFfromHTML(htmlContent, callback) {
 //       res.status(500).send(`Error al generar el PDF: ${error.message}`);
 //     }
 //   };
-  
-
 
 exports.generarPDF = async (req, res) => {
     if (!req.session.user) {
@@ -246,7 +244,7 @@ exports.generarPDF = async (req, res) => {
         }
 
         let subtotal = 0;
-        const doc = new PDFDocument({ margin: 50 });
+        const doc = new PDFDocument({ margin: 10 });
         let buffers = [];
         doc.on('data', buffers.push.bind(buffers));
         doc.on('end', () => {
@@ -258,105 +256,119 @@ exports.generarPDF = async (req, res) => {
             }).end(pdfData);
         });
 
-        // Header
-        doc.fontSize(18).text('ALQUILADORA DAIM', { align: 'center' });
-        doc.moveDown();
+        // Header with color
+        doc.fontSize(18)
+           .fillColor('#FF5733') // Example color: Hexadecimal format (orange)
+           .text('ALQUILADORA DAIM', { align: 'center' })
+           .fillColor('black') // Reset color to black for subsequent text
+           .moveDown();
 
         // Company Info
         doc.fontSize(12)
-           .text('Dirección postal: CALLE REFORMA #15', { continued: true })
-           .text('Número de teléfono: 246 170 2872', { continued: true })
-           .text('Correo electrónico: ixtlapalejic@gmail.com', { continued: true })
-           .text('Ciudad, estado, código: Tlaxcala, Tlax. 90180 Sn Cosme Atlamaxad Fax: Número de fax', { continued: true })
-           .text('Sitio web: https://alquiladora-daim.onrender.com/', { continued: true })
+            .text('DATOS DE ALQUILADORA DAIM', { align: 'left' })
+           .text('Dirección: Calle Reforma #15 San Cosme Atlamaxac, Tlax. 90180 ', { align: 'left' })
+           .text('Número de teléfono: 246 170 2872', { align: 'left' })
+           .text('Correo electrónico: ixtlapalejic@gmail.com', { align: 'left' })
+           .text('Sitio web: https://alquiladora-daim.onrender.com/', { align: 'left' })
            .moveDown();
 
         // Note Information
-        doc.text(`NOTA para: ${venta.nombre}`, { continued: true })
-           .text(`Teléfono: ${venta.telefono}`, { continued: true })
-           .text(`N.º de nota: ${ventaId}`, { continued: true })
-           .text(`Dirección: ${venta.domicilio}`, { continued: true })
-           .text(`Fecha de la nota: ${venta.fecha_entrega.toDateString()}`, { continued: true })
+        doc.text(`Nota para: ${venta.nombre}`, { align: 'right' })
+           .text(`Teléfono: ${venta.telefono}`, { align: 'right' })
+           .text(`N.º de nota: ${ventaId}`, { align: 'right' })
+           .text(`Dirección: ${venta.domicilio}`, { align: 'right' })
+           .text(`Fecha de la nota: ${venta.fecha_entrega.toDateString()}`, { align: 'right' })
            .moveDown();
 
-        // Draw table for Company Info
+        // Draw table header with background color
         const tableTop = doc.y;
-        doc.fontSize(12)
-           .text('Dirección postal', 50, tableTop, { width: 90, align: 'left' })
-           .text('CALLE REFORMA #15', 140, tableTop, { width: 90, align: 'left' })
-           .text('Número de teléfono', 230, tableTop, { width: 90, align: 'left' })
-           .text('246 170 2872', 320, tableTop, { width: 90, align: 'left' })
-           .text('Correo electrónico', 410, tableTop, { width: 90, align: 'left' })
-           .text('ixtlapalejic@gmail.com', 500, tableTop, { width: 90, align: 'left' })
+        const headerBackgroundColor = '#f0f0f0'; // Light gray background
+        const headerTextColor = '#333'; // Dark gray text color
+        const rowHeight = 20; // Define row height
+
+        // Draw background rectangle
+        doc.rect(10, tableTop, 600, rowHeight) // Adjust width and height as needed
+           .fill(headerBackgroundColor);
+
+        // Draw table header text
+        doc.fontSize(12).font('Helvetica-Bold').fillColor(headerTextColor)
+           .text('Fecha entrega', 10, tableTop + 2, { width: 100, align: 'left' })
+           .text('Categoría', 110, tableTop + 2, { width: 60, align: 'left' })
+           .text('Tipo', 180, tableTop + 2, { width: 90, align: 'left' })
+           .text('Cantidad', 300, tableTop + 2, { width: 60, align: 'right' })
+           .text('Precio unidad', 390, tableTop + 2, { width: 100, align: 'right' })
+           .text('Precio', 470, tableTop + 2, { width: 100, align: 'right' })
            .moveDown();
 
         // Draw table lines
         doc.strokeColor('#ddd')
            .lineWidth(1)
-           .moveTo(50, tableTop + 20)
-           .lineTo(570, tableTop + 20)
+           .moveTo(10, tableTop + rowHeight)
+           .lineTo(620, tableTop + rowHeight)
            .stroke();
 
         // Table Rows
-        const rowHeight = 20;
         venta.productos.forEach(producto => {
             const precioTotal = producto.precio * producto.cantidad;
             subtotal += precioTotal;
 
-            doc.fontSize(10)
-               .text(`${venta.fecha_entrega.toDateString()}`, 50, doc.y, { width: 90, align: 'left' })
-               .text(`${producto.categoria}`, 140, doc.y, { width: 90, align: 'left' })
-               .text(`${producto.tipo}`, 230, doc.y, { width: 90, align: 'left' })
-               .text(`${producto.cantidad}`, 320, doc.y, { width: 50, align: 'right' })
-               .text(`$${producto.precio.toFixed(2)}`, 370, doc.y, { width: 100, align: 'right' })
-               .text(`$${precioTotal.toFixed(2)}`, 470, doc.y, { width: 100, align: 'right' })
-               .moveDown();
+            const currentRowTop = doc.y;
+            doc.fontSize(10).font('Helvetica')
+               .text(`${venta.fecha_entrega.toDateString()}`, 10, currentRowTop, { width: 100, align: 'left' })
+               .text(`${producto.categoria}`, 110, currentRowTop, { width: 120, align: 'left' })
+               .text(`${producto.tipo}`, 180, currentRowTop, { width: 120, align: 'left' })
+               .text(`${producto.cantidad}`, 300, currentRowTop, { width: 50, align: 'right' })
+               .text(`$${producto.precio.toFixed(2)}`, 360, currentRowTop, { width: 100, align: 'right' })
+               .text(`$${precioTotal.toFixed(2)}`, 470, currentRowTop, { width: 100, align: 'right' });
 
             // Draw row line
             doc.strokeColor('#ddd')
                .lineWidth(0.5)
-               .moveTo(50, doc.y - 5)
-               .lineTo(570, doc.y - 5)
+               .moveTo(10, currentRowTop + rowHeight)
+               .lineTo(620, currentRowTop + rowHeight)
                .stroke();
+
+            // Move down to the next row
+            doc.y = currentRowTop + rowHeight;
         });
 
         // Draw bottom border
         doc.strokeColor('#ddd')
            .lineWidth(1)
-           .moveTo(50, doc.y)
-           .lineTo(570, doc.y)
+           .moveTo(10, doc.y)
+           .lineTo(620, doc.y)
            .stroke();
         
         doc.moveDown();
 
+        // Save current position
+        const currentY = doc.y;
+
         // Summary Table
-        doc.fontSize(12)
-           .text('Subtotal de la NOTA:', { continued: true })
-           .text(`$${subtotal.toFixed(2)}`, { continued: true })
-           .moveDown()
-           .text('Tipo impositivo:', { continued: true })
-           .text('', { continued: true })
-           .text('Impuesto sobre las ventas:', { continued: true })
-           .text('$0.00', { continued: true })
-           .text('Otros:', { continued: true })
-           .text('', { continued: true })
-           .text('Depósito recibido:', { continued: true })
-           .text('', { continued: true })
-           .moveDown()
-           .fontSize(14)
-           .text(`TOTAL: $${subtotal.toFixed(2)}`, { continued: true })
-           .moveDown();
+        const pageWidth = doc.page.width;
+        const centerX = pageWidth / 2;
+
+        function drawCenteredText(text, yPosition, fontSize, color = 'black') {
+            doc.fontSize(fontSize)
+               .fillColor(color); // Set text color
+            const textWidth = doc.widthOfString(text);
+            const xPosition = centerX - textWidth / 2;
+            doc.text(text, xPosition, yPosition);
+        }
+
+        drawCenteredText('Total de la nota:', currentY, 12);
+        drawCenteredText(`$${subtotal.toFixed(0)}`, currentY + 20, 12);
 
         // Footer
-        doc.fontSize(12)
-           .text('Derechos reservados ALQUILADORA DAIM.')
-           .text(`Total a pagar: $${subtotal.toFixed(2)}`);
+        doc.fontSize(12);
+        drawCenteredText('Derechos reservados ALQUILADORA DAIM.', doc.page.height - 50, 12);
 
         doc.end();
     } catch (error) {
         res.status(500).send(`Error al generar el PDF: ${error.message}`);
     }
 };
+
 
 exports.mostrarFormulario = async (req, res) => {
     // cuidar que se haya iniciado sesion para entra a vista
